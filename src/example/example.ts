@@ -1,4 +1,4 @@
-import { loadInput } from "../utils";
+import { loadInput, splitLines } from "../utils";
 
 export function example() {
     const input = loadInput("example");
@@ -9,10 +9,16 @@ export function example() {
     };
 }
 
-export function part1(input: any) {
+export function part1(input: string) {
+    const parsedInput = parseInput(input);
     return 0;
 }
 
-export function part2(input: any) {
+export function part2(input: string) {
+    const parsedInput = parseInput(input);
     return 1;
+}
+
+function parseInput(input: string) {
+    return splitLines(input);
 }
