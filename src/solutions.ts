@@ -8,4 +8,5 @@ export const solutions: Record<string, { part1?: Solution; part2?: Solution }> =
     5: { part1: "SHMSDGZVC", part2: "VRZGHDFBQ" },
     6: { part1: 1582, part2: 3588 },
     7: { part1: 1543140, part2: 1117448 },
+    8: { part1: 1840, part2: 405769 },
 };
