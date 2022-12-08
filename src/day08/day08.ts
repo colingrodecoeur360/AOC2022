@@ -1,4 +1,4 @@
-import { loadInput, splitLines, toInt } from "../utils";
+import { Grid, loadInput, multiply, splitLines, toInt } from "../utils";
 import _ from "lodash";
 
 export function day08() {
@@ -11,92 +11,53 @@ export function day08() {
 }
 
 export function part1(input: string) {
-    const grid = parseInput(input);
+    const grid = new Grid(parseInput(input));
 
-    const height = grid.length;
-    const width = grid[0].length;
+    const nbOutsideTrees = 2 * grid.height + 2 * grid.width - 4;
+    const nbInsideTrees = _.sum(grid.map(canSeeEdge, getInnerCellsRange(grid)));
+    return nbOutsideTrees + nbInsideTrees;
 
-    const nbOutsideTrees = 2 * height + 2 * width - 4;
+    function canSeeEdge(i: number, j: number) {
+        const slices = getAlignedCells(grid, i, j);
 
-    const visibleTrees = Array(height).fill(0).map(() => Array<number>(width).fill(0));
-
-    for (let i = 1; i < height - 1; i++) {
-        let max = grid[i][0];
-        for (let j = 1; j < width - 1; j++) {
-            if (grid[i][j] > max) {
-                visibleTrees[i][j] = 1;
-                max = grid[i][j];
-            }
-        }
+        return slices.some((slice) => {
+            const tallerTreeDistance = slice.findIndex(value => value >= grid.cell(i, j));
+            return tallerTreeDistance === -1;
+        });
     }
-    for (let i = 1; i < height - 1; i++) {
-        let max = grid[i][width - 1];
-        for (let j = width - 2; j > 0; j--) {
-            if (grid[i][j] > max) {
-                visibleTrees[i][j] = 1;
-                max = grid[i][j];
-            }
-        }
-    }
-    for (let j = 1; j < width - 1; j++) {
-        let max = grid[0][j];
-        for (let i = 1; i < height - 1; i++) {
-            if (grid[i][j] > max) {
-                visibleTrees[i][j] = 1;
-                max = grid[i][j];
-            }
-        }
-    }
-    for (let j = 1; j < width - 1; j++) {
-        let max = grid[width - 1][j];
-        for (let i = height - 2; i > 0; i--) {
-            if (grid[i][j] > max) {
-                visibleTrees[i][j] = 1;
-                max = grid[i][j];
-            }
-        }
-    }
-
-    return _.sum(visibleTrees.flat()) + nbOutsideTrees;
 }
 
 export function part2(input: string) {
-    const grid = parseInput(input);
+    const grid = new Grid(parseInput(input));
 
-    const height = grid.length;
-    const width = grid[0].length;
+    return _.max(grid.map(computeScenicScore, getInnerCellsRange(grid)));
 
-    const scenicScores = Array(height).fill(0).map(() => Array<number>(width).fill(0));
+    function computeScenicScore(i: number, j: number) {
+        const slices = getAlignedCells(grid, i, j);
 
-    for (let i = 1; i < height - 1; i++) {
-        for (let j = 1; j < width - 1; j++) {
-            let leftScore = 0;
-            for (let k = i - 1; k >= 0; k--) {
-                leftScore++;
-                if (grid[k][j] >= grid[i][j]) { break; }
-            }
-            let rightScore = 0;
-            for (let k = i + 1; k < height; k++) {
-                rightScore++;
-                if (grid[k][j] >= grid[i][j]) { break; }
-            }
-            let upScore = 0;
-            for (let k = j - 1; k >= 0; k--) {
-                upScore++;
-                if (grid[i][k] >= grid[i][j]) { break; }
-            }
-            let downScore = 0;
-            for (let k = j + 1; k < width; k++) {
-                downScore++;
-                if (grid[i][k] >= grid[i][j]) { break; }
-            }
-            scenicScores[i][j] = leftScore * rightScore * upScore * downScore;
-        }
+        const scores = slices.map((slice) => {
+            const tallerTreeDistance = slice.findIndex(value => value >= grid.cell(i, j));
+            if (tallerTreeDistance === -1) { return slice.length; }
+            return 1 + tallerTreeDistance;
+        });
+
+        return multiply(scores);
     }
-
-    return _.max(scenicScores.flat());
 }
+
 
 function parseInput(input: string) {
     return splitLines(input).map(row => row.split("").map(toInt));
+}
+
+function getAlignedCells<T>(grid: Grid<T>, i: number, j: number) {
+    return [
+        grid.row(i).slice(0, j).reverse(),
+        grid.row(i).slice(j + 1, grid.width),
+        grid.column(j).slice(0, i).reverse(),
+        grid.column(j).slice(i + 1, grid.height),
+    ];
+}
+function getInnerCellsRange(grid: Grid<unknown>) {
+    return { iStart: 1, iEnd: grid.height - 2, jStart: 1, jEnd: grid.width - 2 };
 }

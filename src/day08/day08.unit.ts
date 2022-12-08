@@ -12,7 +12,7 @@ describe("day08", () => {
         });
     });
     describe("part2", () => {
-        it.only("should work", () => {
+        it("should work", () => {
             const input = loadInput("day08", { filename: "input_test" });
             const result = part2(input);
 

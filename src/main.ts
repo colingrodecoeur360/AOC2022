@@ -47,7 +47,11 @@ function displaySolutions(solutions: Record<string, Solution>) {
         const output = `Day ${day} - ${part}: ${solution}`;
         const expectedSolution = expectedSolutions[day] && expectedSolutions[day][part];
         if (expectedSolution) {
-            console.log(`${solution === expectedSolution ? "🟢" : "🔴"} ${output}`);
+            if (solution === expectedSolution) {
+                console.log(`🟢 ${output}`);
+            } else {
+                console.log(`🔴 ${output} — Expected ${expectedSolution}`);
+            }
         } else {
             console.log(`${output}`);
         }
