@@ -9,6 +9,7 @@ import { day07 } from "./day07";
 import { day08 } from "./day08";
 import { day09 } from "./day09";
 import { day10 } from "./day10";
+import { day11 } from "./day11";
 import { solutions as expectedSolutions } from "./solutions";
 
 interface Solution {
@@ -27,6 +28,7 @@ const solutionByDay: Record<string, Solution> = {
     8: day08(),
     9: day09(),
     10: day10(),
+    11: day11(),
 };
 
 const day = process.argv[2];
